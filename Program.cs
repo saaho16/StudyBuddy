@@ -1,14 +1,22 @@
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Swagger services
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
-app.Urls.Add("http://localhost:5000");
+// Enable Swagger middleware
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/{cityName}/weather", GetWeatherByCity);
 
-app.Run();
-
+// Codespaces-friendly port binding
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Run($"http://0.0.0.0:{port}");
 
 Weather GetWeatherByCity(string cityName)
 {
@@ -25,8 +33,7 @@ public record Weather
     {
         City = city;
         Conditions = "Cloudy";
-        // Temperature here is in celsius degrees, hence the 0-40 range.
-        Temperature = new Random().Next(0,40).ToString();
+        Temperature = new Random().Next(0, 40).ToString();
     }
 
     public string Conditions { get; set; }
